@@ -1,0 +1,35 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.0.1
+      - name: Install dependencies
+        run: uv sync --all-groups
+      - name: Detect benchmark tests
+        id: detect
+        run: |
+          if [ -n "$(find benchmarks -type f \( -name 'test_*.py' -o -name '*_test.py' \))" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run benchmarks
+        if: steps.detect.outputs.found == 'true'
+        run: uv run --no-sync pytest benchmarks --benchmark-json=benchmark-results.json
+      - name: Upload benchmark results
+        if: steps.detect.outputs.found == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-results
+          path: benchmark-results.json

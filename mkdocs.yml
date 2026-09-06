@@ -1,0 +1,36 @@
+site_name: dg-solvax
+site_description: Discontinuous Galerkin and Riemann solver in JAX
+site_url: https://d-a-reiss.github.io/dg-solvax/
+repo_url: https://github.com/D-A-Reiss/dg-solvax
+repo_name: D-A-Reiss/dg-solvax
+strict: true
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.indexes
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+            show_if_no_docstring: true
+            show_submodules: true
+
+markdown_extensions:
+  - pymdownx.snippets:
+      base_path: [docs, .]
+
+nav:
+  - Home: index.md
+  - API reference: reference.md
+
+watch:
+  - src
+  - README.md

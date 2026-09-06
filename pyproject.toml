@@ -1,0 +1,60 @@
+[project]
+name = "dg-solvax"
+version = "0.1.0"
+description = "Discontinuous Galerkin and Riemann solver in JAX for (systems of) partial differential equations"
+readme = "README.md"
+authors = [
+    { name = "David A. Reiss", email = "dav.reiss@t-online.de" }
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    "diffrax>=0.7.2",
+    "jax>=0.11.1",
+    "pydantic>=2.13.5",
+    "sympy>=1.14.0",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.9,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "pytest-benchmark>=5.3.0",
+]
+docs = [
+    "mkdocs-material>=9.7.7",
+    "mkdocstrings[python]>=1.0.6",
+]
+lint = [
+    "ruff>=0.16.6",
+]
+utils = [
+    "plotly>=7.0.0",
+]
+
+[tool.ruff.lint]
+extend-select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
