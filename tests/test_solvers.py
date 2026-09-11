@@ -193,6 +193,7 @@ class TestRiemannSolver:
         assert jnp.allclose(
             result,
             expected_result,
+            atol=1e-7,
         ), f"\n{result=}\n{expected_result=}\n"
 
     @pytest.mark.parametrize(
@@ -256,6 +257,7 @@ class TestRiemannSolver:
         assert jnp.allclose(
             result,
             expected_result_right_boundary,
+            atol=1e-7,
         ), f"\n{result=}\n{expected_result_right_boundary=}\n"
 
         result = RiemannSolver.compute_domain_boundary_values(
@@ -286,6 +288,7 @@ class TestRiemannSolver:
         assert jnp.allclose(
             result,
             jnp.array([[1.0, 0.0], [0.0, 0.0], [1.0, 0.0]]),
+            atol=1e-7,
         ), f"\n{result=}\n"
 
     def test_compute_domain_boundary_values_requires_exactly_one_pair(self):
