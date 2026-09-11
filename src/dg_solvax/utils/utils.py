@@ -1,4 +1,4 @@
-"""Symbolic math utilities built on sympy and JAX.
+"""Symbolic math utilities built on SymPy and JAX.
 
 Provides orthonormal spatial basis functions via Gram-Schmidt and the L2 function inner product over one cell.
 """
@@ -23,7 +23,7 @@ def get_orthonormal_spatial_functions(max_order: int, cell_size: float) -> list[
             orthonormal over.
 
     Returns:
-        Orthonormal sympy expressions of the position variable ``x``.
+        Orthonormal SymPy expressions of the position variable ``x``.
     """
     x = Symbol("x")
 
