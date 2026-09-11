@@ -103,6 +103,8 @@ Potential features to be implemented in the future include:
 
 - support for $N_x = 2$ and $N_x = 3$ spatial dimensions
 
+Feel free to suggest further features via GitHub issues!
+
 
 ## Development
 
