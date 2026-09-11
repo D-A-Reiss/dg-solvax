@@ -1,8 +1,87 @@
-# dg-solvax: Discontinuous Galerkin and Riemann solver in JAX for (systems of) partial differential equations
+# `dg-solvax`: Discontinuous Galerkin and Riemann solver in JAX for (systems of) partial differential equations
 
+[![CI](https://github.com/D-A-Reiss/dg-solvax/actions/workflows/ci.yml/badge.svg)](https://github.com/D-A-Reiss/dg-solvax/actions/workflows/ci.yml)
 [![docs](https://github.com/D-A-Reiss/dg-solvax/actions/workflows/docs.yml/badge.svg)](https://d-a-reiss.github.io/dg-solvax/)
 
-For a wider context of this work see my [GitHub pages](https://d-a-reiss.github.io/projects/dg-solvax).
+The core functionality of this package is to numerically solve initial-boundary-value problems for (systems of) linear partial differential equations (PDEs) with constant coefficients of the following form:
+$$ \frac{\partial y}{\partial t} = \sum_{\gamma=1}^{N_x} A_\gamma \frac{\partial y}{\partial x_\gamma} + B y, $$
+
+where $y = y(x, t)$ is the $N_y$-dimensional vector field to be determined by solving the PDEs, $t$ usually denotes the time, $N_x$ the number of spatial dimensions, $x_\gamma$ the components of $x$, and $A$ as well as $B$ are $N_y \times N_y$ matrices, independent of $t$ and $x$.
+Supplied initial conditions are projected onto the basis exactly via symbolic integration; boundary conditions need to be supplied as reflection and transmission coefficients.
+
+Remarks:
+
+- Your higher-order PDE may be converted to this form like a second-order ordinary differential equation (ODE) may be converted to a system of first-order ODEs.
+
+- Currently, only $N_x = 1$ is supported, which may change in the future, see "Potential features in the future" below.
+
+- For the mathematics behind the discontinuous Galerkin and the Riemann solver, see the documentation page ["Mathematical background"](https://d-a-reiss.github.io/dg-solvax/mathematical-background).
+
+- For a wider context of this work see my [GitHub pages](https://d-a-reiss.github.io/projects/dg-solvax).
+
+The main entrypoint to use the core functionality of `dg-solvax` as explained above is the method `partialdiffeqsolve` of the class `DiscontinuousGalerkinSolver`, see "Quickstart" and "Documentation" below.
+
+
+## Installation
+
+dg-solvax requires Python >= 3.12 and is available on [PyPI](https://pypi.org/project/dg-solvax/):
+
+```sh
+pip install dg-solvax
+```
+
+or, with [uv](https://docs.astral.sh/uv/):
+
+```sh
+uv add dg-solvax
+```
+
+## Quickstart
+
+Solve a pair of linear advection equations with opposite velocities, i.e.,
+$$ \frac{\partial y}{\partial t} = \begin{pmatrix}
+1 & 0 \\
+0 & -1 \\
+\end{pmatrix} \frac{\partial y}{\partial x}, $$
+
+in the domain $t \in [0, 2], x \in [0, 10]$, a block-shaped initial condition for the first component, and absorbing domain boundaries, using rectangular function for the discretized spatial domain in the discontinuous Galerkin scheme:
+
+```python
+import jax.numpy as jnp
+from diffrax import SaveAt, Tsit5
+from sympy import Heaviside, Symbol, sqrt
+
+from dg_solvax import DiscontinuousGalerkinSolver
+
+x = Symbol("x")
+cell_size = 1.0
+num_spatial_cells = 10
+
+solver = DiscontinuousGalerkinSolver(
+    spatial_domain_boundaries=(0.0, num_spatial_cells * cell_size),
+    num_spatial_cells=num_spatial_cells,
+    orthonormal_spatial_functions=[1 / sqrt(cell_size)],
+)
+
+solution, ys = solver.partialdiffeqsolve(
+    diffeq_solver=Tsit5(),
+    t0=jnp.array(0.0),
+    t1=jnp.array(2.0),
+    dt0=jnp.array(0.25),
+    yt0=[Heaviside(x - 2.0) - Heaviside(x - 3.0), 0 * x],
+    yx0=jnp.array([[0.0, 0.0]]),
+    yx1=jnp.array([[0.0, 0.0]]),
+    spatial_derivative_operator=jnp.array([[1.0, 0.0], [0.0, -1.0]]),
+    no_derivative_operator=jnp.zeros((2, 2)),
+    saveat_t=SaveAt(ts=[0.0, 1.0, 2.0]),
+    saveat_x=jnp.linspace(0.0, 10.0, 101),
+)
+# ys has shape (num_saveat_t, num_saveat_x, num_components)
+```
+
+where more details on the arguments can be found in the [API reference]([...](https://d-a-reiss.github.io/dg-solvax/reference)).
+
+See the [examples directory](https://github.com/D-A-Reiss/dg-solvax/tree/main/examples) for complete runnable scripts, including a reflecting domain boundary and config-driven experiments, and the [benchmarks directory](https://github.com/D-A-Reiss/dg-solvax/tree/main/benchmarks) for performance benchmarks.
 
 
 ## Documentation
@@ -18,6 +97,13 @@ uv run --group docs mkdocs serve
 For a static build into `site/`, use `uv run --group docs mkdocs build` instead.
 
 
+## Potential features in the future
+
+Potential features to be implemented in the future include:
+
+- support for $N_x = 2$ and $N_x = 3$ spatial dimensions
+
+
 ## Development
 
 To run the CI checks (formatting, linting, tests, secret scanning) automatically on every commit, install the pre-commit hook:
@@ -27,10 +113,44 @@ uv sync
 uv run pre-commit install
 ```
 
-The secret scanning hook requires the gitleaks binary, e.g., installed via Homebrew:
+The secret scanning hook requires the gitleaks binary, e.g. installed via Homebrew:
 
 ```sh
 brew install gitleaks
 ```
 
 To run all checks on demand, use `uv run pre-commit run --all-files`.
+
+See [CONTRIBUTING.md](https://github.com/D-A-Reiss/dg-solvax/blob/main/CONTRIBUTING.md) for more details on the development setup.
+
+
+## Related work
+
+The following is an incomplete list of important work related to `dg-solvax`:
+
+- [Diffrax](https://docs.kidger.site/diffrax/): JAX-based library of numerical ODE/SDE solvers with `diffeqsolve` and multiple adjoint modes; the direct time-integration dependency of `dg-solvax`.
+
+- [Trixi.jl](https://github.com/trixi-framework/Trixi.jl): Julia framework for adaptive high-order discontinuous Galerkin simulations of hyperbolic conservation laws with entropy-stable fluxes and shock capturing; the closest DG counterpart in another ecosystem.
+
+- [JAX-Fluids](https://github.com/tumaer/JAXFLUIDS): Fully differentiable 3D compressible finite-volume CFD solver in JAX with high-order WENO/TENO reconstruction and Riemann solvers (HLL, HLLC, Roe).
+
+- [JAX-DIPS](https://github.com/JAX-DIPS/JAX-DIPS): Differentiable interfacial PDE solver in JAX with level-set interfaces and neural bootstrapping.
+
+- [JAX-FEM](https://github.com/deepmodeling/jax-fem): Differentiable GPU-accelerated finite element package in pure JAX for inverse design.
+
+- [PyFR](https://www.pyfr.org): Open-source Python+C flux-reconstruction (arbitrary-order DG-type) solver for scale-resolving simulations across CPUs, GPUs, and TPUs.
+
+- [ExaDG](https://github.com/exadg/exadg): High-performance matrix-free high-order DG solver for (in)compressible flow and coupled multiphysics, built on `deal.II`.
+
+- [deal.II](https://www.dealii.org): Widely used C++ finite-element library with extensive DG support; the foundation under `ExaDG`.
+
+- [Firedrake](https://www.firedrakeproject.org): Automated finite-element PDE solution from UFL expressions with PETSc solvers, including HDG methods.
+
+- [Clawpack](https://www.clawpack.org): Finite-volume package for hyperbolic PDEs with high-resolution Godunov methods and a rich library of Riemann solvers (PyClaw for Python).
+
+
+## Acknowledgements
+
+Parts of this work were done during the 10% of my work time as employee of [TNG Technology Consulting GmbH](https://www.tngtech.com/), during which I'm free to pursue whatever software project I want.
+
+Parts of this work were generated with AI models hosted by TNG. For how to get access to them when you're not an employee of TNG, check out https://trustedtokens.eu/. All AI-generated parts have been reviewed by me.
