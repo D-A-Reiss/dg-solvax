@@ -286,20 +286,27 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@v10.0.1
       - name: Publish to PyPI
-        run: uv publish --trusted-publishing always
+        run: |
+          VERSION="${TAG#v}"
+          if curl -fsS "https://pypi.org/pypi/dg-solvax/json" | grep -q "\"$VERSION\""; then
+            echo "Version $VERSION is already on PyPI; skipping publish."
+          else
+            uv publish --trusted-publishing always
+          fi
       - name: Roll back on failure
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           gh release delete "$TAG" --cleanup-tag --yes || true
-          git push --delete origin "$TAG" || true
 
   finalize:
     needs: [finalize-gate, publish]
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
       TAG: ${{ needs.finalize-gate.outputs.tag }}
     steps:
       - name: Make draft release public
