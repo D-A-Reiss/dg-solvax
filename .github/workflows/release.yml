@@ -130,10 +130,8 @@ jobs:
             --title "release $TAG" \
             --body-file "$RUNNER_TEMP/notes.md")"
           echo "number=${URL##*/}" >> "$GITHUB_OUTPUT"
-      - name: Enable auto-merge
-        env:
-          PR: ${{ steps.pr.outputs.number }}
-        run: gh pr merge "$PR" --auto --squash
+          echo "Release PR: $URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Approve the release pull request, then squash-merge it to finalize the release."
       - name: Roll back on failure
         if: failure()
         env:
