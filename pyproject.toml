@@ -1,6 +1,6 @@
 [project]
 name = "dg-solvax"
-version = "0.1.0"
+version = "0.1.1"
 description = "Discontinuous Galerkin and Riemann solver in JAX for (systems of) partial differential equations"
 readme = "README.md"
 authors = [
