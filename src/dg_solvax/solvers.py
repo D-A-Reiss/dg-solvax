@@ -219,7 +219,7 @@ class DiscontinuousGalerkinSolver:
                 spatial domain.
             num_spatial_cells: Number of uniform cells the spatial domain is
                 divided into.
-            orthonormal_spatial_functions: Orthonormal sympy expressions of
+            orthonormal_spatial_functions: Orthonormal SymPy expressions of
                 a single position variable, used as per-cell basis.
 
         Raises:
@@ -486,10 +486,10 @@ class DiscontinuousGalerkinSolver:
         """Compute the per-cell basis coefficients of the initial conditions.
 
         Each component of ``yt0`` is projected onto the orthonormal spatial
-        functions cell-by-cell by sympy integration.
+        functions cell-by-cell by SymPy integration.
 
         Args:
-            yt0: Initial conditions as sympy expressions of the single
+            yt0: Initial conditions as SymPy expressions of the single
                 position variable ``x``, one per component of the unknown
                 vector field.
             check_whether_representable: Whether to check exact
@@ -613,7 +613,7 @@ class DiscontinuousGalerkinSolver:
     ) -> tuple[Solution, Array]:
         """Solve the PDE in time, evaluating at the requested positions.
 
-        Initial conditions may be given as sympy expressions or coefficient
+        Initial conditions may be given as SymPy expressions or coefficient
         arrays; time integration is delegated to diffrax.
 
         Args:

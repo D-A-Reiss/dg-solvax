@@ -45,7 +45,7 @@ class SystemPartialDiffEqsProblem(BaseModel):
     system_partial_diff_eqs: SystemPartialDiffEqs
     vector_field_values_time_0: Annotated[
         list[Expr],
-        "Initial conditions as sympy expressions of the position variable "
+        "Initial conditions as SymPy expressions of the position variable "
         "``x``, one per component of the unknown vector field",
     ]
     vector_field_values_left_boundary: Annotated[
