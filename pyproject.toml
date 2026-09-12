@@ -27,6 +27,13 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 
+[project.urls]
+Homepage = "https://github.com/D-A-Reiss/dg-solvax"
+Repository = "https://github.com/D-A-Reiss/dg-solvax"
+Documentation = "https://d-a-reiss.github.io/dg-solvax/"
+Issues = "https://github.com/D-A-Reiss/dg-solvax/issues"
+PyPI = "https://pypi.org/project/dg-solvax/"
+
 [build-system]
 requires = ["uv_build>=0.12.9,<0.13.0"]
 build-backend = "uv_build"

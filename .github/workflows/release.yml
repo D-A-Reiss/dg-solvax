@@ -258,6 +258,8 @@ jobs:
               --notes-file "$RUNNER_TEMP/notes.md" \
               --generate-notes
           fi
+      - name: Attach build to release
+        run: gh release upload "$TAG" dist/* --clobber --repo "$GITHUB_REPOSITORY"
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
