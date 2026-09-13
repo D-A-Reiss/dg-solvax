@@ -90,7 +90,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Configure git identity
         run: |
           git config user.name "David A. Reiss"
@@ -205,7 +205,7 @@ jobs:
         with:
           ref: main
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Verify main carries the released version
         env:
           TAG: ${{ needs.finalize-gate.outputs.tag }}
@@ -233,7 +233,7 @@ jobs:
           git config user.name "David A. Reiss"
           git config user.email "dav.reiss@t-online.de"
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Build package
         run: uv build
       - name: Tag release commit
@@ -286,7 +286,7 @@ jobs:
           name: dist
           path: dist/
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Publish to PyPI
         run: |
           VERSION="${TAG#v}"
