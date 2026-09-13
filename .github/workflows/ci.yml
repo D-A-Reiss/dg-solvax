@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Install lint dependencies
         run: uv sync --group lint --locked
       - name: Check formatting
@@ -37,7 +37,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
       - name: Install dependencies
         run: uv sync --all-groups --locked --python ${{ matrix.python-version }}
       - name: Test
